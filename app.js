@@ -45,6 +45,14 @@
   [...V.ydelser, "Andet"].forEach((y) => opgave.add(new Option(y, y)));
   $("dato").min = new Date().toISOString().slice(0, 10);
 
+  // Nummerplade: store bogstaver og dansk opstilling "AB 12 345" (ønskeplader bevares som skrevet)
+  const pladeFormat = (s) => {
+    const r = s.toUpperCase().replace(/[\s-]+/g, "");
+    return /^[A-ZÆØÅ]{2}\d{5}$/.test(r) ? `${r.slice(0, 2)} ${r.slice(2, 4)} ${r.slice(4)}` : s.trim().toUpperCase();
+  };
+  const pladeFelt = document.querySelector('[name="plade"]');
+  pladeFelt.addEventListener("blur", () => { pladeFelt.value = pladeFormat(pladeFelt.value); });
+
   $("bestilForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
@@ -70,7 +78,7 @@
       `Navn: ${f.navn.trim()}`,
       `Telefon: ${f.telefon.trim()}`,
       `Bil: ${f.bil.trim() || "-"}`,
-      `Nummerplade: ${f.plade.trim().toUpperCase() || "-"}`,
+      `Nummerplade: ${pladeFormat(f.plade) || "-"}`,
       `Opgave: ${f.opgave}`,
       `Ønsket dato: ${dato}`,
       "",
