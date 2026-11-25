@@ -53,7 +53,7 @@
   const pladeFelt = document.querySelector('[name="plade"]');
   pladeFelt.addEventListener("blur", () => { pladeFelt.value = pladeFormat(pladeFelt.value); });
 
-  $("bestilForm").addEventListener("submit", (e) => {
+  $("bestilForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
     const fejl = $("fejl");
@@ -77,6 +77,7 @@
       "",
       `Navn: ${f.navn.trim()}`,
       `Telefon: ${f.telefon.trim()}`,
+      `Mail: ${f.mail.trim() || "-"}`,
       `Bil: ${f.bil.trim() || "-"}`,
       `Nummerplade: ${pladeFormat(f.plade) || "-"}`,
       `Opgave: ${f.opgave}`,
@@ -88,16 +89,51 @@
       "Venlig hilsen",
       f.navn.trim(),
     ].join("\n");
-    visMailValg(emne, tekst);
+
+    // Send direkte til værkstedets mail via FormSubmit (gratis, ingen konto; aktiveres én gang fra værkstedets mail)
+    if (f._honey) return; // spam-robot
+    const knap = $("sendBtn");
+    knap.disabled = true;
+    knap.textContent = "Sender …";
+    $("mailValg").classList.add("hidden");
+    try {
+      const svar = await fetch(`https://formsubmit.co/ajax/${V.email}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          _subject: emne,
+          _template: "box",
+          _captcha: "false",
+          ...(f.mail.trim() ? { _replyto: f.mail.trim() } : {}),
+          Navn: f.navn.trim(),
+          Telefon: f.telefon.trim(),
+          Mail: f.mail.trim() || "-",
+          Bil: f.bil.trim() || "-",
+          Nummerplade: pladeFormat(f.plade) || "-",
+          Opgave: f.opgave,
+          "Ønsket dato": dato,
+          Beskrivelse: f.beskrivelse.trim() || "-",
+        }),
+      });
+      const data = await svar.json().catch(() => ({}));
+      if (!svar.ok || String(data.success) !== "true") throw new Error(data.message || svar.status);
+      e.target.classList.add("hidden");
+      $("sendtTlf").textContent = V.telefon;
+      $("sendtTlf").href = "tel:" + V.telefon.replace(/[^\d+]/g, "");
+      $("sendt").classList.remove("hidden");
+      $("sendt").scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (err) {
+      console.warn("Kunne ikke sende via FormSubmit:", err);
+      visMailValg(emne, tekst);
+    } finally {
+      knap.disabled = false;
+      knap.textContent = "Send forespørgsel";
+    }
   });
 
-  // Valg af mail-program. Gmail og Outlook åbnes som hjemmeside: app-links (googlegmail://, ms-outlook://)
-  // gav "Programmet kunne ikke åbnes" i Edge på iPhone, så de bruges ikke.
+  // Reserve hvis direkte afsendelse fejler: åbn telefonens mail eller kopiér teksten
   function visMailValg(emne, tekst) {
-    const to = encodeURIComponent(V.email), s = encodeURIComponent(emne), b = encodeURIComponent(tekst);
-    $("mailStandard").href = `mailto:${V.email}?subject=${s}&body=${b}`;
-    $("mailGmail").href = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${s}&body=${b}`;
-    $("mailOutlook").href = `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${s}&body=${b}`;
+    $("mailStandard").href = `mailto:${V.email}?subject=${encodeURIComponent(emne)}&body=${encodeURIComponent(tekst)}`;
     $("mailKopier").onclick = async () => {
       const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
       try {
