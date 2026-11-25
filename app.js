@@ -88,8 +88,36 @@
       "Venlig hilsen",
       f.navn.trim(),
     ].join("\n");
-    location.href = `mailto:${V.email}?subject=${encodeURIComponent(emne)}&body=${encodeURIComponent(tekst)}`;
+    visMailValg(emne, tekst);
   });
+
+  // Valg af mail-program. På iPhone åbnes Gmail/Outlook-appen direkte, ellers deres hjemmeside.
+  const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  function visMailValg(emne, tekst) {
+    const to = encodeURIComponent(V.email), s = encodeURIComponent(emne), b = encodeURIComponent(tekst);
+    $("mailStandard").href = `mailto:${V.email}?subject=${s}&body=${b}`;
+    $("mailGmail").href = iOS
+      ? `googlegmail:///co?to=${to}&subject=${s}&body=${b}`
+      : `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${s}&body=${b}`;
+    $("mailOutlook").href = iOS
+      ? `ms-outlook://compose?to=${to}&subject=${s}&body=${b}`
+      : `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${s}&body=${b}`;
+    $("mailKopier").onclick = async () => {
+      const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
+      try {
+        await navigator.clipboard.writeText(alt);
+        $("kopieret").textContent = `Kopieret! Sæt teksten ind i en mail til ${V.email}.`;
+      } catch {
+        $("kopieret").textContent = `Kunne ikke kopiere. Skriv til ${V.email}.`;
+      }
+      $("kopieret").classList.remove("hidden");
+    };
+    $("kopieret").classList.add("hidden");
+    $("mailValg").classList.remove("hidden");
+    $("mailValg").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  $("mailLuk").addEventListener("click", () => $("mailValg").classList.add("hidden"));
 
   // Find vej
   const maal = harSted ? `${V.lat},${V.lon}` : V.adresse;

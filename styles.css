@@ -72,6 +72,18 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--roed); outl
   background: var(--sort); color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 600;
 }
 
+/* Valg af mail-program */
+.mailvalg { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linje); display: grid; gap: 10px; }
+.mailvalg p { margin: 0; }
+.mailvalg small { color: var(--graa); }
+.mailknap {
+  display: block; width: 100%; padding: 14px; border: 0; border-radius: 12px; cursor: pointer;
+  background: var(--roed); color: #fff; text-align: center; text-decoration: none;
+  font-family: inherit; font-size: 1rem; font-weight: 600;
+}
+.kopieret { color: var(--graa); font-size: 0.92rem; }
+.mailluk { background: none; border: 0; color: var(--graa); font-family: inherit; font-size: 0.95rem; padding: 8px; cursor: pointer; }
+
 /* Find vej */
 .adresse { font-size: 1.1rem; font-weight: 600; margin: 0 0 4px; }
 .afstand { color: var(--graa); margin: 0 0 10px; }
