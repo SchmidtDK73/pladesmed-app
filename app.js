@@ -141,6 +141,12 @@
   $("fod").textContent = fod;
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {
-    navigator.serviceWorker.register("sw.js");
+    // Når en ny version af appen tager over, genindlæses siden én gang, så den nye version vises med det samme
+    const havdeGammel = !!navigator.serviceWorker.controller;
+    let genindlaest = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (havdeGammel && !genindlaest) { genindlaest = true; location.reload(); }
+    });
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((reg) => reg.update());
   }
 })();

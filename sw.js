@@ -1,6 +1,6 @@
 // Service worker: appen virker offline (ring og find vej kræver selvfølgelig net/telefon).
 // Hæv VERSION når app-filer ændres.
-const VERSION = "v7";
+const VERSION = "v8";
 const SHELL = `pladesmed-${VERSION}`;
 const FILER = [
   "./", "index.html", "styles.css", "app.js", "config.js", "manifest.webmanifest",
@@ -8,7 +8,7 @@ const FILER = [
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(FILER)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(FILER.map((f) => new Request(f, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
@@ -21,7 +21,8 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request).then((r) => {
+    // "no-cache": spørg altid serveren om der er en nyere fil (GitHub Pages lader ellers browseren genbruge i 10 min)
+    fetch(e.request, { cache: "no-cache" }).then((r) => {
       const kopi = r.clone();
       caches.open(SHELL).then((c) => c.put(e.request, kopi));
       return r;
