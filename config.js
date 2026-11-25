@@ -15,17 +15,15 @@ window.VAERKSTED = {
   lat: 56.523765,
   lon: 9.989328,
 
-  aabningstider: [
-    ["Mandag–torsdag", "7.00–16.00"],
-    ["Fredag", "7.00–14.00"],
-    ["Lørdag–søndag", "Lukket"],
-  ],
+  facebook: "https://www.facebook.com/profile.php?id=61586401904129",
+  beskrivelse: "Vi udfører al slags rustarbejde, opretning og udskiftning af karosseridele.",
+
+  // Tom liste = "Efter aftale" vises. Fx [["Mandag–fredag", "7.00–16.00"], ["Weekend", "Lukket"]]
+  aabningstider: [],
 
   ydelser: [
-    "Rustreparation",
-    "Buler og pladeskader",
-    "Svejsning",
-    "Restaurering af klassiske biler",
-    "Klargøring til syn",
+    "Rustarbejde",
+    "Opretning",
+    "Udskiftning af karosseridele",
   ],
 };

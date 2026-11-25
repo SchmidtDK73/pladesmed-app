@@ -118,6 +118,12 @@
 
   // Åbningstider og ydelser
   $("tider").innerHTML = "";
+  if (!V.aabningstider.length) {
+    const p = document.createElement("p");
+    p.className = "efter-aftale";
+    p.textContent = "Efter aftale – ring eller bestil tid.";
+    $("tider").replaceWith(p);
+  }
   V.aabningstider.forEach(([dag, tid]) => {
     const tr = $("tider").insertRow();
     tr.insertCell().textContent = dag;
@@ -129,7 +135,13 @@
     $("ydelser").append(li);
   });
 
-  const fod = [V.navn, V.kontakt, V.adresse, V.cvr && "CVR " + V.cvr].filter(Boolean).join(" · ");
+  if (V.beskrivelse) $("beskrivelse").textContent = V.beskrivelse;
+  if (V.facebook) {
+    $("fbBtn").href = V.facebook;
+    $("fbBtn").classList.remove("hidden");
+  }
+
+  const fod =[V.navn, V.kontakt, V.adresse, V.cvr && "CVR " + V.cvr].filter(Boolean).join(" · ");
   $("fod").textContent = fod;
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {
