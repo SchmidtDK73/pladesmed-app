@@ -129,7 +129,7 @@
     $("ydelser").append(li);
   });
 
-  const fod = [V.navn, V.adresse, V.telefon, V.email].filter(Boolean).join(" · ");
+  const fod = [V.navn, V.kontakt, V.adresse, V.cvr && "CVR " + V.cvr].filter(Boolean).join(" · ");
   $("fod").textContent = fod;
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {

@@ -4,14 +4,16 @@ window.VAERKSTED = {
   navn: "Pladesmeden Bjergby",
   slogan: "Professionelt pladearbejde med sans for detaljen",
 
-  telefon: "",            // fx "+45 12 34 56 78"
-  email: "",              // fx "kontakt@pladesmeden.dk" – bestillinger sendes hertil
+  kontakt: "Frank Rasmussen",
+  cvr: "44777819",
 
-  adresse: "",            // fx "Bjergbyvej 1, 9800 Hjørring" – bruges til GPS
-  // Valgfrit: præcis placering (fra Google Maps: højreklik på stedet → kopier tal).
-  // Hvis udfyldt, bruges de i stedet for adressen, og der vises kort og afstand.
-  lat: null,              // fx 57.4
-  lon: null,              // fx 9.97
+  telefon: "20 44 78 24",
+  email: "pladesmeden.bjergby@gmail.com",   // bestillinger sendes hertil
+
+  adresse: "Houmarksvej 130, 8981 Spentrup", // bruges til GPS
+  // Præcis placering (fra OpenStreetMap). Bruges til vejvisning, kort og afstand.
+  lat: 56.523765,
+  lon: 9.989328,
 
   aabningstider: [
     ["Mandag–torsdag", "7.00–16.00"],
