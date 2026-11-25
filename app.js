@@ -101,86 +101,83 @@
     $("billedInfo").classList.remove("hidden");
     for (const f of nye.slice(0, plads)) billeder.push(await formindsk(f, billeder.length + 1));
     visMiniaturer();
-    $("mailValg").classList.add("hidden");
   });
 
+  // Send direkte til værkstedet via FormSubmit (almindelig formular-afsendelse, som understøtter vedhæftede filer).
+  // FormSubmit sender en mail til V.email og sender kunden tilbage til appen med ?sendt=1.
+  // Første gang skal værkstedet aktivere formularen via et link i en mail fra FormSubmit.
+  if (V.telefon) {
+    $("ringHellere").innerHTML = `Vil du hellere snakke? Ring på <a href="tel:${V.telefon.replace(/[^\d+]/g, "")}">${V.telefon}</a>.`;
+  }
   $("bestilForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
     const fejl = $("fejl");
-    if (!f.navn.trim() || !f.telefon.trim()) {
-      fejl.textContent = "Skriv venligst navn og telefonnummer, så vi kan vende tilbage.";
-      fejl.classList.remove("hidden");
-      return;
-    }
-    if (!V.email) {
-      fejl.textContent = "Værkstedets mailadresse er ikke sat op endnu – ring i stedet.";
-      fejl.classList.remove("hidden");
-      return;
-    }
+    const visFejl = (t) => { fejl.textContent = t; fejl.classList.remove("hidden"); };
+    if (!f.navn.trim() || !f.telefon.trim()) return visFejl("Skriv venligst navn og telefonnummer, så vi kan vende tilbage.");
+    if (f.email.trim() && !e.target.email.checkValidity()) return visFejl("Mailadressen ser ikke rigtig ud.");
+    if (!V.email) return visFejl("Værkstedets mailadresse er ikke sat op endnu – ring i stedet.");
+    const total = billeder.reduce((s, b) => s + b.size, 0);
+    if (total > 9.5 * 1024 * 1024) return visFejl("Billederne fylder for meget. Fjern et eller to, og prøv igen.");
     fejl.classList.add("hidden");
+
     const dato = f.dato ? new Date(f.dato + "T12:00").toLocaleDateString("da-DK", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "Hurtigst muligt";
-    const emne = `Tidsbestilling: ${f.opgave} – ${f.navn.trim()}`;
-    const tekst = [
-      `Hej ${V.kontakt || "Pladesmeden"}`,
-      "",
-      "Jeg vil gerne bestille tid.",
-      "",
-      `Navn: ${f.navn.trim()}`,
-      `Telefon: ${f.telefon.trim()}`,
-      `Bil: ${f.bil.trim() || "-"}`,
-      `Nummerplade: ${pladeFormat(f.plade) || "-"}`,
-      `Opgave: ${f.opgave}`,
-      `Ønsket dato: ${dato}`,
-      ...(billeder.length ? [`Billeder: ${billeder.length} vedhæftet`] : []),
-      "",
-      "Beskrivelse:",
-      f.beskrivelse.trim() || "-",
-      "",
-      "Venlig hilsen",
-      f.navn.trim(),
-    ].join("\n");
-    visMailValg(emne, tekst);
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = `https://formsubmit.co/${V.email}`;
+    form.enctype = "multipart/form-data";
+    form.hidden = true;
+    const felt = (navn, vaerdi) => {
+      const i = document.createElement("input");
+      i.type = "hidden";
+      i.name = navn;
+      i.value = vaerdi;
+      form.append(i);
+    };
+    felt("_subject", `Tidsbestilling: ${f.opgave} – ${f.navn.trim()}`);
+    felt("_template", "table");
+    felt("_captcha", "false");
+    felt("_next", `${location.origin}${location.pathname}?sendt=1`);
+    felt("Navn", f.navn.trim());
+    felt("Telefon", f.telefon.trim());
+    if (f.email.trim()) felt("email", f.email.trim()); // FormSubmit bruger feltet "email" som Svar-til
+    felt("Bil", f.bil.trim() || "-");
+    felt("Nummerplade", pladeFormat(f.plade) || "-");
+    felt("Opgave", f.opgave);
+    felt("Ønsket dato", dato);
+    felt("Beskrivelse", f.beskrivelse.trim() || "-");
+    let medBilleder = 0;
+    try {
+      billeder.forEach((fil, i) => {
+        const dt = new DataTransfer();
+        dt.items.add(fil);
+        const inp = document.createElement("input");
+        inp.type = "file";
+        inp.name = `Billede ${i + 1}`;
+        inp.files = dt.files;
+        form.append(inp);
+        medBilleder++;
+      });
+    } catch {
+      // Meget gamle browsere kan ikke lægge billeder i en formular – så sendes teksten alene
+    }
+    felt("Billeder", medBilleder ? `${medBilleder} vedhæftet` : billeder.length ? "Kunne ikke vedhæftes" : "Ingen");
+    $("sendKnap").disabled = true;
+    $("sendKnap").textContent = "Sender …";
+    document.body.append(form);
+    form.submit();
   });
 
-  // Send med telefonens mail-app, eller kopiér teksten. (Gmail/Outlook på nettet kan ikke udfylde mailen
-  // på en telefon, app-links fejlede i Edge, og direkte afsendelse via FormSubmit blev fravalgt.)
-  // Med billeder bruges telefonens Del-menu (mailto kan ikke vedhæfte filer).
-  function visMailValg(emne, tekst) {
-    const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
-    const kanDele = billeder.length > 0 && navigator.canShare && navigator.canShare({ files: billeder });
-    const del = $("mailDel");
-    del.classList.toggle("hidden", !kanDele);
-    if (kanDele) {
-      del.onclick = async () => {
-        try {
-          await navigator.share({ files: billeder, title: emne, text: alt });
-        } catch (err) {
-          if (err.name !== "AbortError") alert("Billederne kunne ikke deles. Brug 'Åbn i mail' og vedhæft dem selv.");
-        }
-      };
-    }
-    $("mailHjaelp").textContent = kanDele
-      ? `Tryk "Send med billeder", vælg Mail, og skriv ${V.email} som modtager.`
-      : billeder.length
-        ? "Mailen er skrevet færdig – husk at vedhæfte billederne, før du trykker send."
-        : "Mailen er skrevet færdig – du skal bare trykke send.";
-    $("mailStandard").textContent = kanDele ? "Åbn i mail uden billeder" : "Åbn i mail";
-    $("mailStandard").href = `mailto:${V.email}?subject=${encodeURIComponent(emne)}&body=${encodeURIComponent(tekst)}`;
-    $("mailKopier").onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(alt);
-        $("kopieret").textContent = `Kopieret! Sæt teksten ind i en mail til ${V.email}.`;
-      } catch {
-        $("kopieret").textContent = `Kunne ikke kopiere. Skriv til ${V.email}.`;
-      }
-      $("kopieret").classList.remove("hidden");
-    };
-    $("kopieret").classList.add("hidden");
-    $("mailValg").classList.remove("hidden");
-    $("mailValg").scrollIntoView({ behavior: "smooth", block: "center" });
+  // Tilbage fra FormSubmit: vis tak og fjern ?sendt=1 fra adressen
+  if (new URLSearchParams(location.search).has("sendt")) {
+    $("tak").classList.remove("hidden");
+    history.replaceState(null, "", location.pathname);
   }
-  $("mailLuk").addEventListener("click", () => $("mailValg").classList.add("hidden"));
+  // Hvis man trykker Tilbage fra FormSubmit-siden, skal knappen virke igen
+  window.addEventListener("pageshow", () => {
+    $("sendKnap").disabled = false;
+    $("sendKnap").textContent = "Send forespørgsel";
+  });
 
   // Find vej
   const maal = harSted ? `${V.lat},${V.lon}` : V.adresse;

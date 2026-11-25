@@ -22,6 +22,7 @@
     </header>
 
     <div class="mangler hidden" id="mangler"></div>
+    <div class="tak hidden" id="tak"><b>Tak! Din bestilling er sendt.</b><br>Vi vender tilbage hurtigst muligt.</div>
     <nav class="knapper">
       <button class="stor" data-vis="bestil">
         <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.5l8 5 8-5V6H4Zm16 2.85-8 5-8-5V18h16V8.85Z"/></svg>
@@ -40,10 +41,11 @@
     <!-- Bestil tid -->
     <section class="panel hidden" id="bestil">
       <h2>Bestil tid</h2>
-      <p class="hjaelp">Udfyld det du kan. Når du trykker <b>Send</b>, skrives en mail færdig til os – du sender den selv. Tilføj gerne billeder af skaden.</p>
+      <p class="hjaelp">Udfyld det du kan, og tilføj gerne billeder af skaden. Når du trykker <b>Send</b>, får vi din bestilling med det samme.</p>
       <form id="bestilForm" novalidate>
         <label>Navn<input name="navn" autocomplete="name" required></label>
         <label>Telefon<input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
+        <label>Mail <span class="valgfri">(valgfri – så kan vi svare på mail)</span><input name="email" type="email" autocomplete="email" inputmode="email"></label>
         <div class="to">
           <label>Bil (mærke og model)<input name="bil" placeholder="fx VW Golf 2012"></label>
           <label>Nummerplade<input name="plade" autocapitalize="characters" placeholder="AB 12 345"></label>
@@ -62,16 +64,9 @@
           <small class="billedinfo hidden" id="billedInfo"></small>
         </div>
         <p class="fejl hidden" id="fejl"></p>
-        <button type="submit" class="send">Send forespørgsel</button>
+        <button type="submit" class="send" id="sendKnap">Send forespørgsel</button>
+        <p class="ringhellere" id="ringHellere"></p>
       </form>
-      <div class="mailvalg hidden" id="mailValg">
-        <p><b>Hvordan vil du sende?</b><br><small id="mailHjaelp">Mailen er skrevet færdig – du skal bare trykke send.</small></p>
-        <button type="button" class="mailknap hidden" id="mailDel">Send med billeder</button>
-        <a class="mailknap" id="mailStandard" href="#">Åbn i mail</a>
-        <button type="button" class="mailknap" id="mailKopier">Kopiér teksten</button>
-        <p class="kopieret hidden" id="kopieret"></p>
-        <button type="button" class="mailluk" id="mailLuk">Annullér</button>
-      </div>
     </section>
 
     <!-- Find vej -->
