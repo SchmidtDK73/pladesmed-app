@@ -2,7 +2,7 @@
 
 Webapp (PWA) til kunder hos Pladesmeden Bjergby. Ren HTML/CSS/JS – ingen build-trin.
 
-- **Bestil tid**: formular, der sender bestillingen direkte til værkstedets mail via FormSubmit (formsubmit.co). Skal aktiveres én gang: første bestilling udløser en aktiveringsmail til værkstedets Gmail. Fejler afsendelsen, kan kunden bruge sin egen mail i stedet.
+- **Bestil tid**: formular, der skriver en mail færdig til værkstedet (telefonens mail-app), eller kopierer teksten.
 - **Ring til os**: ringer direkte op.
 - **Find vej**: åbner GPS-vejvisning i Apple Kort eller Google Maps (og viser kort og afstand, hvis koordinater er sat).
 

@@ -40,12 +40,10 @@
     <!-- Bestil tid -->
     <section class="panel hidden" id="bestil">
       <h2>Bestil tid</h2>
-      <p class="hjaelp">Udfyld det du kan og tryk <b>Send</b> – så får vi din forespørgsel og ringer eller skriver tilbage.</p>
+      <p class="hjaelp">Udfyld det du kan. Når du trykker <b>Send</b>, skrives en mail færdig til os – du sender den selv og kan vedhæfte billeder af skaden.</p>
       <form id="bestilForm" novalidate>
         <label>Navn<input name="navn" autocomplete="name" required></label>
         <label>Telefon<input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
-        <label>Mail <small class="valgfri">(valgfri)</small><input name="mail" type="email" autocomplete="email" inputmode="email"></label>
-        <input class="honning" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="to">
           <label>Bil (mærke og model)<input name="bil" placeholder="fx VW Golf 2012"></label>
           <label>Nummerplade<input name="plade" autocapitalize="characters" placeholder="AB 12 345"></label>
@@ -54,15 +52,10 @@
         <label>Ønsket dato<input name="dato" type="date" id="dato"></label>
         <label>Beskrivelse<textarea name="beskrivelse" rows="4" placeholder="Fortæl kort om skaden eller opgaven"></textarea></label>
         <p class="fejl hidden" id="fejl"></p>
-        <button type="submit" class="send" id="sendBtn">Send forespørgsel</button>
-        <p class="privat">Oplysningerne sendes til Pladesmeden via tjenesten FormSubmit og bruges kun til at svare dig.</p>
+        <button type="submit" class="send">Send forespørgsel</button>
       </form>
-      <div class="sendt hidden" id="sendt">
-        <p><b>Tak – din forespørgsel er sendt!</b></p>
-        <p>Vi vender tilbage hurtigst muligt. Haster det, så ring på <a id="sendtTlf" href="#"></a>.</p>
-      </div>
       <div class="mailvalg hidden" id="mailValg">
-        <p><b>Det lykkedes ikke at sende.</b><br><small>Send i stedet med din egen mail – den er skrevet færdig.</small></p>
+        <p><b>Hvordan vil du sende?</b><br><small>Mailen er skrevet færdig – du skal bare trykke send.</small></p>
         <a class="mailknap" id="mailStandard" href="#">Åbn i mail</a>
         <button type="button" class="mailknap" id="mailKopier">Kopiér teksten</button>
         <p class="kopieret hidden" id="kopieret"></p>

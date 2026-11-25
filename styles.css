@@ -72,15 +72,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--roed); outl
   background: var(--sort); color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 600;
 }
 
-.valgfri { font-weight: 400; color: var(--graa); }
-.honning { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.privat { color: var(--graa); font-size: 0.8rem; margin: 10px 0 0; }
-.send:disabled { opacity: 0.6; }
-.sendt { background: #eaf6ea; border: 1px solid #b9dcb9; border-radius: 12px; padding: 14px; }
-.sendt p { margin: 0 0 6px; }
-.sendt p:last-child { margin: 0; }
-.sendt a { color: inherit; font-weight: 600; }
-
 /* Valg af mail-program */
 .mailvalg { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linje); display: grid; gap: 10px; }
 .mailvalg p { margin: 0; }
