@@ -250,17 +250,50 @@
       return;
     }
     const ua = navigator.userAgent;
-    const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const ipad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const ios = ipad || /iPhone|iPod/.test(ua);
+    if (ios) return visGuide(ua, ipad);
     const hjaelp = $("hjemHjaelp");
-    hjaelp.innerHTML = ios
-      ? /CriOS|EdgiOS|FxiOS/.test(ua)
-        ? "Tryk på <b>Del</b>-ikonet <b>⬆︎</b> (i Edge og Chrome sidder det i adresselinjen eller under menuen <b>•••</b>), og vælg <b>Føj til hjemmeskærm</b>."
-        : "Tryk på <b>Del</b>-ikonet <b>⬆︎</b> nederst i Safari, og vælg <b>Føj til hjemmeskærm</b>."
-      : /Android/.test(ua)
-        ? "Tryk på menuen <b>⋮</b> i browseren, og vælg <b>Installer app</b> eller <b>Føj til startskærm</b>."
-        : "Åbn browserens menu, og vælg <b>Installer app</b> – eller åbn siden på din telefon.";
+    hjaelp.innerHTML = /Android/.test(ua)
+      ? "Tryk på menuen <b>⋮</b> i browseren, og vælg <b>Installer app</b> eller <b>Føj til startskærm</b>."
+      : "Åbn browserens menu, og vælg <b>Installer app</b> – eller åbn siden på din telefon.";
     hjaelp.classList.toggle("hidden");
   });
+
+  // Ikoner som i iPhonens menuer
+  const IKON = {
+    del: '<svg viewBox="0 0 24 24"><path d="M12 2.5 7.8 6.7l1.1 1.1L11.2 5.5V15h1.6V5.5l2.3 2.3 1.1-1.1L12 2.5ZM5 10h3v1.6H6.6v8.8h10.8v-8.8H16V10h3v12H5V10Z"/></svg>',
+    mere: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+    tilfoej: '<svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 1.6a.4.4 0 0 0-.4.4v14c0 .2.2.4.4.4h14c.2 0 .4-.2.4-.4V5a.4.4 0 0 0-.4-.4H5Zm6.2 3.4h1.6v3.2H16v1.6h-3.2V16h-1.6v-3.2H8v-1.6h3.2V8Z"/></svg>',
+  };
+  // Hvor sidder knappen, og hvilke trin skal man igennem – afhænger af browser og iOS-version
+  function visGuide(ua, ipad) {
+    const tilfoej = [`Vælg ${IKON.tilfoej} <b>Føj til hjemmeskærm</b> <small>(rul ned, hvis du ikke ser den)</small>`, "Tryk <b>Tilføj</b> øverst til højre"];
+    let pil, trin;
+    if (/CriOS/.test(ua)) {
+      pil = "top-hoejre";
+      trin = [`Tryk på ${IKON.del} <b>Del</b> øverst til højre i adresselinjen`, ...tilfoej];
+    } else if (/EdgiOS|FxiOS/.test(ua)) {
+      pil = ipad ? "top-hoejre" : "bund-hoejre";
+      trin = [`Tryk på ${IKON.mere} <b>menuen</b> ${ipad ? "øverst til højre" : "nederst til højre"}`, `Tryk på ${IKON.del} <b>Del</b>`, ...tilfoej];
+    } else {
+      const safari = parseInt((ua.match(/Version\/(\d+)/) || [])[1] || "0", 10);
+      if (ipad) {
+        pil = "top-hoejre";
+        trin = [`Tryk på ${IKON.del} <b>Del</b> øverst til højre`, ...tilfoej];
+      } else if (safari >= 26) {
+        pil = "bund-hoejre";
+        trin = [`Tryk på ${IKON.mere} nederst til højre`, `Tryk på ${IKON.del} <b>Del</b>`, ...tilfoej];
+      } else {
+        pil = "bund-midt";
+        trin = [`Tryk på ${IKON.del} <b>Del</b> nederst på skærmen`, ...tilfoej];
+      }
+    }
+    $("guideTrin").innerHTML = trin.map((t) => `<li>${t}</li>`).join("");
+    $("guide").className = `guide pil-${pil}`;
+  }
+  $("guide").addEventListener("click", () => $("guide").classList.add("hidden"));
+  $("guideBoks").addEventListener("click", (e) => { if (e.target !== $("guideLuk")) e.stopPropagation(); });
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     // Når en ny version af appen tager over, genindlæses siden én gang, så den nye version vises med det samme

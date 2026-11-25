@@ -98,6 +98,19 @@
     </section>
 
     <footer id="fod"></footer>
+
+    <!-- Vejledning til iPhone: boks med pil mod browserens knap -->
+    <div class="guide hidden" id="guide" role="dialog" aria-label="Læg appen på hjemmeskærmen">
+      <div class="guide-boks" id="guideBoks">
+        <button type="button" class="guide-luk" id="guideLuk" aria-label="Luk">×</button>
+        <div class="guide-top">
+          <img src="icons/icon-180.png" alt="" width="48" height="48">
+          <div><b>Læg Pladesmeden på hjemmeskærmen</b><small>Så har du appen lige ved hånden.</small></div>
+        </div>
+        <ol class="guide-trin" id="guideTrin"></ol>
+      </div>
+      <div class="guide-pil" id="guidePil" aria-hidden="true"></div>
+    </div>
   </main>
 
   <script src="config.js"></script>

@@ -135,3 +135,47 @@ footer { text-align: center; color: var(--graa); font-size: 0.85rem; padding: 6p
 footer a { color: inherit; }
 
 @media (max-width: 360px) { .to { grid-template-columns: 1fr; gap: 0; } }
+
+/* Vejledning: læg på hjemmeskærmen (iPhone/iPad) */
+.guide {
+  position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, 0.45);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 16px 12px calc(56px + env(safe-area-inset-bottom));
+  animation: ind 0.2s ease-out;
+}
+.guide[class*="pil-top"] { justify-content: flex-start; padding: calc(56px + env(safe-area-inset-top)) 12px 16px; }
+.guide-boks {
+  position: relative; max-width: 420px; width: 100%; margin: 0 auto;
+  background: var(--kort); border-radius: 18px; padding: 18px 18px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.guide-luk {
+  position: absolute; top: 8px; right: 10px; width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: var(--linje); color: var(--sort); font-size: 20px; line-height: 1; cursor: pointer;
+}
+.guide-top { display: flex; gap: 12px; align-items: center; padding-right: 30px; margin-bottom: 12px; }
+.guide-top img { border-radius: 11px; flex: none; }
+.guide-top b { display: block; }
+.guide-top small { color: var(--graa); }
+.guide-trin { margin: 0; padding: 0; list-style: none; counter-reset: trin; }
+.guide-trin li {
+  counter-increment: trin; position: relative; padding: 9px 0 9px 38px; border-top: 1px solid var(--linje);
+}
+.guide-trin li::before {
+  content: counter(trin); position: absolute; left: 0; top: 8px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--roed); color: #fff; font-weight: 700; font-size: 0.85rem; display: grid; place-items: center;
+}
+.guide-trin svg { width: 20px; height: 20px; fill: #0a7aff; vertical-align: -4px; }
+.guide-trin small { color: var(--graa); }
+.guide-pil {
+  position: fixed; width: 0; height: 0; border: 16px solid transparent; z-index: 51;
+  animation: hop 1s ease-in-out infinite;
+}
+.pil-bund-midt .guide-pil, .pil-bund-hoejre .guide-pil { bottom: calc(14px + env(safe-area-inset-bottom)); border-top: 24px solid #fff; border-bottom: 0; }
+.pil-top-hoejre .guide-pil { top: calc(14px + env(safe-area-inset-top)); right: 22px; border-bottom: 24px solid #fff; border-top: 0; }
+.pil-bund-midt .guide-pil { left: calc(50% - 16px); }
+.pil-bund-hoejre .guide-pil { right: 22px; }
+@keyframes hop { 50% { transform: translateY(8px); } }
+.pil-top-hoejre .guide-pil { animation-name: hopop; }
+@keyframes hopop { 50% { transform: translateY(-8px); } }
+@keyframes ind { from { opacity: 0; } }
