@@ -71,7 +71,7 @@
     const dato = f.dato ? new Date(f.dato + "T12:00").toLocaleDateString("da-DK", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "Hurtigst muligt";
     const emne = `Tidsbestilling: ${f.opgave} – ${f.navn.trim()}`;
     const tekst = [
-      "Hej Pladesmeden",
+      `Hej ${V.kontakt || "Pladesmeden"}`,
       "",
       "Jeg vil gerne bestille tid.",
       "",

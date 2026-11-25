@@ -1,6 +1,6 @@
 // Service worker: appen virker offline (ring og find vej kræver selvfølgelig net/telefon).
 // Hæv VERSION når app-filer ændres.
-const VERSION = "v17";
+const VERSION = "v18";
 const SHELL = `pladesmed-${VERSION}`;
 const FILER = [
   "./", "index.html", "styles.css", "app.js", "config.js", "manifest.webmanifest",
