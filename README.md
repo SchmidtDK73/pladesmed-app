@@ -29,4 +29,4 @@ Appen ligger på GitHub Pages. Åbn adressen i Safari og vælg Del → "Føj til
 
 ## QR-kode
 
-`qr/pladesmeden-qr.png` peger på appen. Lav en ny med `swift tools/make_qr.swift <adresse> qr/pladesmeden-qr.png`.
+`qr/pladesmeden-qr.png` peger på appen. Logoet sidder i midten. Lav en ny med `swift tools/make_qr.swift <adresse> qr/pladesmeden-qr.png icons/logo.png`.
