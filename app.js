@@ -53,6 +53,57 @@
   const pladeFelt = document.querySelector('[name="plade"]');
   pladeFelt.addEventListener("blur", () => { pladeFelt.value = pladeFormat(pladeFelt.value); });
 
+  // Billeder: gøres mindre (maks 1600 px, JPEG), så mailen ikke bliver for tung
+  const MAKS_BILLEDER = 6;
+  let billeder = [];
+  async function formindsk(fil, nr) {
+    try {
+      const bmp = await createImageBitmap(fil);
+      const s = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bmp.width * s);
+      c.height = Math.round(bmp.height * s);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      const blob = await new Promise((r) => c.toBlob(r, "image/jpeg", 0.82));
+      return blob ? new File([blob], `skade-${nr}.jpg`, { type: "image/jpeg" }) : fil;
+    } catch {
+      return fil;
+    }
+  }
+  function visMiniaturer() {
+    const boks = $("miniaturer");
+    boks.querySelectorAll("img").forEach((i) => URL.revokeObjectURL(i.src));
+    boks.innerHTML = "";
+    billeder.forEach((fil, i) => {
+      const d = document.createElement("div");
+      d.className = "mini";
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(fil);
+      img.alt = `Billede ${i + 1}`;
+      const x = document.createElement("button");
+      x.type = "button";
+      x.textContent = "×";
+      x.setAttribute("aria-label", "Fjern billede");
+      x.onclick = () => { billeder.splice(i, 1); visMiniaturer(); };
+      d.append(img, x);
+      boks.append(d);
+    });
+    const info = $("billedInfo");
+    info.textContent = billeder.length ? `${billeder.length} billede${billeder.length > 1 ? "r" : ""} valgt` : "";
+    info.classList.toggle("hidden", !billeder.length);
+  }
+  $("billedInput").addEventListener("change", async (e) => {
+    const nye = [...e.target.files].filter((f) => f.type.startsWith("image/") || !f.type);
+    e.target.value = "";
+    const plads = MAKS_BILLEDER - billeder.length;
+    if (nye.length > plads) alert(`Du kan højst sende ${MAKS_BILLEDER} billeder.`);
+    $("billedInfo").textContent = "Gør billederne klar …";
+    $("billedInfo").classList.remove("hidden");
+    for (const f of nye.slice(0, plads)) billeder.push(await formindsk(f, billeder.length + 1));
+    visMiniaturer();
+    $("mailValg").classList.add("hidden");
+  });
+
   $("bestilForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
@@ -81,6 +132,7 @@
       `Nummerplade: ${pladeFormat(f.plade) || "-"}`,
       `Opgave: ${f.opgave}`,
       `Ønsket dato: ${dato}`,
+      ...(billeder.length ? [`Billeder: ${billeder.length} vedhæftet`] : []),
       "",
       "Beskrivelse:",
       f.beskrivelse.trim() || "-",
@@ -93,10 +145,29 @@
 
   // Send med telefonens mail-app, eller kopiér teksten. (Gmail/Outlook på nettet kan ikke udfylde mailen
   // på en telefon, app-links fejlede i Edge, og direkte afsendelse via FormSubmit blev fravalgt.)
+  // Med billeder bruges telefonens Del-menu (mailto kan ikke vedhæfte filer).
   function visMailValg(emne, tekst) {
+    const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
+    const kanDele = billeder.length > 0 && navigator.canShare && navigator.canShare({ files: billeder });
+    const del = $("mailDel");
+    del.classList.toggle("hidden", !kanDele);
+    if (kanDele) {
+      del.onclick = async () => {
+        try {
+          await navigator.share({ files: billeder, title: emne, text: alt });
+        } catch (err) {
+          if (err.name !== "AbortError") alert("Billederne kunne ikke deles. Brug 'Åbn i mail' og vedhæft dem selv.");
+        }
+      };
+    }
+    $("mailHjaelp").textContent = kanDele
+      ? `Tryk "Send med billeder", vælg Mail, og skriv ${V.email} som modtager.`
+      : billeder.length
+        ? "Mailen er skrevet færdig – husk at vedhæfte billederne, før du trykker send."
+        : "Mailen er skrevet færdig – du skal bare trykke send.";
+    $("mailStandard").textContent = kanDele ? "Åbn i mail uden billeder" : "Åbn i mail";
     $("mailStandard").href = `mailto:${V.email}?subject=${encodeURIComponent(emne)}&body=${encodeURIComponent(tekst)}`;
     $("mailKopier").onclick = async () => {
-      const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
       try {
         await navigator.clipboard.writeText(alt);
         $("kopieret").textContent = `Kopieret! Sæt teksten ind i en mail til ${V.email}.`;
@@ -167,6 +238,32 @@
 
   const fod =[V.navn, V.kontakt, V.adresse, V.cvr && "CVR " + V.cvr].filter(Boolean).join(" · ");
   $("fod").textContent = fod;
+
+  // Læg appen på hjemmeskærmen. Android/Chrome/Edge: rigtig installér-dialog. iPhone: vejledning (ingen dialog findes).
+  const erApp = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  let installer = null;
+  if (!erApp) $("hjem").classList.remove("hidden");
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installer = e; });
+  window.addEventListener("appinstalled", () => $("hjem").classList.add("hidden"));
+  $("hjemKnap").addEventListener("click", async () => {
+    if (installer) {
+      installer.prompt();
+      await installer.userChoice;
+      installer = null;
+      return;
+    }
+    const ua = navigator.userAgent;
+    const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const hjaelp = $("hjemHjaelp");
+    hjaelp.innerHTML = ios
+      ? /CriOS|EdgiOS|FxiOS/.test(ua)
+        ? "Tryk på <b>Del</b>-ikonet <b>⬆︎</b> (i Edge og Chrome sidder det i adresselinjen eller under menuen <b>•••</b>), og vælg <b>Føj til hjemmeskærm</b>."
+        : "Tryk på <b>Del</b>-ikonet <b>⬆︎</b> nederst i Safari, og vælg <b>Føj til hjemmeskærm</b>."
+      : /Android/.test(ua)
+        ? "Tryk på menuen <b>⋮</b> i browseren, og vælg <b>Installer app</b> eller <b>Føj til startskærm</b>."
+        : "Åbn browserens menu, og vælg <b>Installer app</b> – eller åbn siden på din telefon.";
+    hjaelp.classList.toggle("hidden");
+  });
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     // Når en ny version af appen tager over, genindlæses siden én gang, så den nye version vises med det samme

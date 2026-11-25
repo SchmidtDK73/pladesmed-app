@@ -40,7 +40,7 @@
     <!-- Bestil tid -->
     <section class="panel hidden" id="bestil">
       <h2>Bestil tid</h2>
-      <p class="hjaelp">Udfyld det du kan. Når du trykker <b>Send</b>, skrives en mail færdig til os – du sender den selv og kan vedhæfte billeder af skaden.</p>
+      <p class="hjaelp">Udfyld det du kan. Når du trykker <b>Send</b>, skrives en mail færdig til os – du sender den selv. Tilføj gerne billeder af skaden.</p>
       <form id="bestilForm" novalidate>
         <label>Navn<input name="navn" autocomplete="name" required></label>
         <label>Telefon<input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
@@ -51,11 +51,22 @@
         <label>Hvad skal laves?<select name="opgave" id="opgave"></select></label>
         <label>Ønsket dato<input name="dato" type="date" id="dato"></label>
         <label>Beskrivelse<textarea name="beskrivelse" rows="4" placeholder="Fortæl kort om skaden eller opgaven"></textarea></label>
+        <div class="billeder">
+          <span class="felt">Billeder af skaden</span>
+          <label class="billedknap">
+            <svg viewBox="0 0 24 24"><path d="M9 3h6l1.8 2H20a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3.2L9 3Zm3 4.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>
+            Tilføj billeder
+            <input type="file" id="billedInput" class="skjult-input" accept="image/*" multiple>
+          </label>
+          <div class="miniaturer" id="miniaturer"></div>
+          <small class="billedinfo hidden" id="billedInfo"></small>
+        </div>
         <p class="fejl hidden" id="fejl"></p>
         <button type="submit" class="send">Send forespørgsel</button>
       </form>
       <div class="mailvalg hidden" id="mailValg">
-        <p><b>Hvordan vil du sende?</b><br><small>Mailen er skrevet færdig – du skal bare trykke send.</small></p>
+        <p><b>Hvordan vil du sende?</b><br><small id="mailHjaelp">Mailen er skrevet færdig – du skal bare trykke send.</small></p>
+        <button type="button" class="mailknap hidden" id="mailDel">Send med billeder</button>
         <a class="mailknap" id="mailStandard" href="#">Åbn i mail</a>
         <button type="button" class="mailknap" id="mailKopier">Kopiér teksten</button>
         <p class="kopieret hidden" id="kopieret"></p>
@@ -81,6 +92,14 @@
       <h2>Det laver vi</h2>
       <p class="beskrivelse" id="beskrivelse"></p>
       <ul id="ydelser"></ul>
+    </section>
+
+    <section class="hjem hidden" id="hjem">
+      <button type="button" class="hjemknap" id="hjemKnap">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3L12 3Z"/></svg>
+        Læg appen på hjemmeskærmen
+      </button>
+      <p class="hjemhjaelp hidden" id="hjemHjaelp"></p>
     </section>
 
     <footer id="fod"></footer>

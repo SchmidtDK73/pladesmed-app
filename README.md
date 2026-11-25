@@ -3,6 +3,8 @@
 Webapp (PWA) til kunder hos Pladesmeden Bjergby. Ren HTML/CSS/JS – ingen build-trin.
 
 - **Bestil tid**: formular, der skriver en mail færdig til værkstedet (telefonens mail-app), eller kopierer teksten.
+- **Billeder**: kunden kan tilføje op til 6 billeder (gøres mindre automatisk). På telefonen sendes de med via Del-menuen.
+- **Hjemmeskærm**: knap der installerer appen (Android) eller viser hvordan (iPhone).
 - **Ring til os**: ringer direkte op.
 - **Find vej**: åbner GPS-vejvisning i Apple Kort eller Google Maps (og viser kort og afstand, hvis koordinater er sat).
 
