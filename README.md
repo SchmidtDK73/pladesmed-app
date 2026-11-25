@@ -26,3 +26,7 @@ Appen ligger på GitHub Pages. Åbn adressen i Safari og vælg Del → "Føj til
 ## Ikoner
 
 `swift tools/make_icons.swift <logo-fil>` laver `icons/icon-*.png` ud fra bilen i logoet.
+
+## QR-kode
+
+`qr/pladesmeden-qr.png` peger på appen. Lav en ny med `swift tools/make_qr.swift <adresse> qr/pladesmeden-qr.png`.
