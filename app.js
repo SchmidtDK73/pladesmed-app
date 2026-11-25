@@ -14,6 +14,36 @@
     $("mangler").classList.remove("hidden");
   }
 
+  // Åbnet i en anden browser end Safari (iPhone) eller Chrome (Android)? Så vis en knap, der åbner appen der.
+  // Et link kan ikke vælge browser selv; telefonen bruger sin standard-browser (fx Edge).
+  (() => {
+    const ua = navigator.userAgent;
+    const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const android = /Android/.test(ua);
+    const andre = /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|FB_IAB|Instagram|Messenger|Snapchat|DuckDuckGo|YaBrowser/;
+    const hjemmeskaerm = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    let skjult = false;
+    try { skjult = localStorage.getItem("browserBeskedLukket") === "1"; } catch { /* privat vindue */ }
+    if (hjemmeskaerm || skjult) return;
+    const url = location.href.split("#")[0];
+    let navn, link;
+    if (iOS && (!/Safari\//.test(ua) || andre.test(ua))) {
+      navn = "Safari";
+      link = url.replace(/^https:\/\//, "x-safari-https://");
+    } else if (android && (!/Chrome\//.test(ua) || /EdgA|SamsungBrowser|OPR\/|; wv\)|FBAN|FBAV|Instagram/.test(ua))) {
+      navn = "Chrome";
+      link = `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else return;
+    $("browserTekst").textContent = `Appen virker bedst i ${navn}.`;
+    $("browserKnap").textContent = `Åbn i ${navn}`;
+    $("browserKnap").href = link;
+    $("browserBesked").classList.remove("hidden");
+    $("browserLuk").addEventListener("click", () => {
+      $("browserBesked").classList.add("hidden");
+      try { localStorage.setItem("browserBeskedLukket", "1"); } catch { /* ok */ }
+    });
+  })();
+
   // Ring
   const ring = $("ringBtn");
   if (V.telefon) {
