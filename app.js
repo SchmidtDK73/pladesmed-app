@@ -137,8 +137,27 @@
 
   if (V.beskrivelse) $("beskrivelse").textContent = V.beskrivelse;
   if (V.facebook) {
-    $("fbBtn").href = V.facebook;
-    $("fbBtn").classList.remove("hidden");
+    const fb = $("fbBtn");
+    fb.href = V.facebook;
+    fb.classList.remove("hidden");
+    // På iPhone lukker et almindeligt Facebook-link ofte straks igen, fordi iOS prøver at give det
+    // videre til Facebook-appen. Åbn derfor appen direkte, og brug hjemmesiden, hvis appen ikke findes.
+    const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (iOS && V.facebookId) {
+      fb.addEventListener("click", (e) => {
+        e.preventDefault();
+        let vaek = false;
+        const skjult = () => { if (document.hidden) vaek = true; };
+        document.addEventListener("visibilitychange", skjult);
+        window.addEventListener("pagehide", () => (vaek = true), { once: true });
+        location.href = "fb://profile/" + V.facebookId;
+        setTimeout(() => {
+          document.removeEventListener("visibilitychange", skjult);
+          if (!vaek && !document.hidden) location.href = V.facebook;
+        }, 1500);
+      });
+    }
   }
 
   const fod =[V.navn, V.kontakt, V.adresse, V.cvr && "CVR " + V.cvr].filter(Boolean).join(" · ");
