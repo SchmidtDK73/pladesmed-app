@@ -19,7 +19,10 @@ window.VAERKSTED = {
   beskrivelse: "Vi udfører al slags rustarbejde, opretning og udskiftning af karosseridele.",
 
   // Tom liste = "Efter aftale" vises. Fx [["Mandag–fredag", "7.00–16.00"], ["Weekend", "Lukket"]]
-  aabningstider: [],
+  aabningstider: [
+    ["Mandag–fredag", "7.00–16.00"],
+    ["Lørdag–søndag", "Lukket"],
+  ],
 
   ydelser: [
     "Rustarbejde",
