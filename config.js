@@ -15,8 +15,6 @@ window.VAERKSTED = {
   lat: 56.523765,
   lon: 9.989328,
 
-  facebook: "https://www.facebook.com/profile.php?id=61586401904129",
-  facebookId: "61586401904129",   // bruges til at åbne Facebook-appen direkte på telefonen
   beskrivelse: "Vi udfører al slags rustarbejde, opretning og udskiftning af karosseridele.",
 
   // Tom liste = "Efter aftale" vises. Fx [["Mandag–fredag", "7.00–16.00"], ["Weekend", "Lukket"]]
