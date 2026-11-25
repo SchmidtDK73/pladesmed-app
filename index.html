@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pladesmeden Bjergby</title>
+  <meta name="description" content="Bestil tid, ring eller find vej til Pladesmeden Bjergby.">
+  <meta name="theme-color" content="#f7f1e3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pladesmeden">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header class="logo">
+      <img src="icons/logo.png" alt="Pladesmeden Bjergby – Professionelt pladearbejde med sans for detaljen" width="1000" height="500">
+    </header>
+
+    <div class="mangler hidden" id="mangler"></div>
+
+    <nav class="knapper">
+      <button class="stor" data-vis="bestil">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.5l8 5 8-5V6H4Zm16 2.85-8 5-8-5V18h16V8.85Z"/></svg>
+        <span><b>Bestil tid</b><small>Send en forespørgsel på mail</small></span>
+      </button>
+      <a class="stor" id="ringBtn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8Z"/></svg>
+        <span><b>Ring til os</b><small id="ringTekst">&nbsp;</small></span>
+      </a>
+      <button class="stor" data-vis="vej">
+        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7Zm0 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg>
+        <span><b>Find vej</b><small id="vejTekst">GPS-vejvisning til værkstedet</small></span>
+      </button>
+    </nav>
+
+    <!-- Bestil tid -->
+    <section class="panel hidden" id="bestil">
+      <h2>Bestil tid</h2>
+      <p class="hjaelp">Udfyld det du kan. Når du trykker <b>Send</b>, åbnes din mail med det hele skrevet ind – du sender den selv og kan vedhæfte billeder af skaden.</p>
+      <form id="bestilForm" novalidate>
+        <label>Navn<input name="navn" autocomplete="name" required></label>
+        <label>Telefon<input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
+        <div class="to">
+          <label>Bil (mærke og model)<input name="bil" placeholder="fx VW Golf 2012"></label>
+          <label>Nummerplade<input name="plade" autocapitalize="characters" placeholder="AB 12 345"></label>
+        </div>
+        <label>Hvad skal laves?<select name="opgave" id="opgave"></select></label>
+        <label>Ønsket dato<input name="dato" type="date" id="dato"></label>
+        <label>Beskrivelse<textarea name="beskrivelse" rows="4" placeholder="Fortæl kort om skaden eller opgaven"></textarea></label>
+        <p class="fejl hidden" id="fejl"></p>
+        <button type="submit" class="send">Send forespørgsel</button>
+      </form>
+    </section>
+
+    <!-- Find vej -->
+    <section class="panel hidden" id="vej">
+      <h2>Find vej</h2>
+      <p class="adresse" id="adresseTekst"></p>
+      <p class="afstand hidden" id="afstand"></p>
+      <iframe class="kort hidden" id="kort" title="Kort over værkstedet" loading="lazy"></iframe>
+      <div class="vejknapper">
+        <a class="vejknap" id="appleKort" href="#">Apple Kort</a>
+        <a class="vejknap" id="googleKort" href="#">Google Maps</a>
+      </div>
+    </section>
+
+    <section class="info">
+      <h2>Åbningstider</h2>
+      <table id="tider"></table>
+      <h2>Det laver vi</h2>
+      <ul id="ydelser"></ul>
+    </section>
+
+    <footer id="fod"></footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

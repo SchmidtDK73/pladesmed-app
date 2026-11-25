@@ -1,0 +1,16 @@
+{
+  "name": "Pladesmeden Bjergby",
+  "short_name": "Pladesmeden",
+  "description": "Bestil tid, ring eller find vej til Pladesmeden Bjergby",
+  "lang": "da",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f1e3",
+  "theme_color": "#f7f1e3",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
