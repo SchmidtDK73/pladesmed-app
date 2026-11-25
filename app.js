@@ -91,18 +91,13 @@
     visMailValg(emne, tekst);
   });
 
-  // Valg af mail-program. På iPhone åbnes Gmail/Outlook-appen direkte, ellers deres hjemmeside.
-  const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // Valg af mail-program. Gmail og Outlook åbnes som hjemmeside: app-links (googlegmail://, ms-outlook://)
+  // giver fejlen "Programmet kunne ikke åbnes" i fx Edge på iPhone, hvis appen ikke findes.
   function visMailValg(emne, tekst) {
     const to = encodeURIComponent(V.email), s = encodeURIComponent(emne), b = encodeURIComponent(tekst);
     $("mailStandard").href = `mailto:${V.email}?subject=${s}&body=${b}`;
-    $("mailGmail").href = iOS
-      ? `googlegmail:///co?to=${to}&subject=${s}&body=${b}`
-      : `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${s}&body=${b}`;
-    $("mailOutlook").href = iOS
-      ? `ms-outlook://compose?to=${to}&subject=${s}&body=${b}`
-      : `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${s}&body=${b}`;
+    $("mailGmail").href = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${s}&body=${b}`;
+    $("mailOutlook").href = `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${s}&body=${b}`;
     $("mailKopier").onclick = async () => {
       const alt = `Til: ${V.email}\nEmne: ${emne}\n\n${tekst}`;
       try {
